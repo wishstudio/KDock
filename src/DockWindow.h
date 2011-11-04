@@ -15,34 +15,18 @@
  *   License along with this program; if not, write to the
  *   Free Software Foundation, Inc.,
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
+ */ 
 
-#include <KApplication>
-#include <KAboutData>
-#include <KCmdLineArgs>
-#include <KLocale>
+#include <KMainWindow>
 
-#include "DockWindow.h"
-
-int main(int argc, char *argv[])
+class QWidget;
+class DockWindow: public KMainWindow
 {
-	KAboutData aboutData(
-		"KDock",
-		0,
-		ki18n("KDock"),
-		"0.1",
-		ki18n("A dock for KDE."),
-		KAboutData::License_GPL,
-		ki18n("(c) KDock Authors 2011"),
-		ki18n(""),
-		"",
-		"");
-	KCmdLineArgs::init(argc, argv, &aboutData);
+	Q_OBJECT
 	
-	KApplication app;
+public:
+	DockWindow(QWidget *parent = 0);
 	
-	DockWindow *dock = new DockWindow();
-	dock->show();
-	
-	return app.exec();
-}
+private:
+	void reposition();
+};

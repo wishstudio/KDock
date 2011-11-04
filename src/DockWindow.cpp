@@ -17,32 +17,30 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <Qt>
+#include <QDesktopWidget>
+#include <QWidget>
+
 #include <KApplication>
-#include <KAboutData>
-#include <KCmdLineArgs>
-#include <KLocale>
+#include <KMainWindow>
+#include <KWindowSystem>
 
 #include "DockWindow.h"
 
-int main(int argc, char *argv[])
+DockWindow::DockWindow(QWidget *parent):
+	KMainWindow(parent, Qt::CustomizeWindowHint | Qt::FramelessWindowHint)
 {
-	KAboutData aboutData(
-		"KDock",
-		0,
-		ki18n("KDock"),
-		"0.1",
-		ki18n("A dock for KDE."),
-		KAboutData::License_GPL,
-		ki18n("(c) KDock Authors 2011"),
-		ki18n(""),
-		"",
-		"");
-	KCmdLineArgs::init(argc, argv, &aboutData);
-	
-	KApplication app;
-	
-	DockWindow *dock = new DockWindow();
-	dock->show();
-	
-	return app.exec();
+	setAttribute(Qt::WA_TranslucentBackground, true);
+	reposition();
+}
+
+void DockWindow::reposition()
+{
+	qreal width = 100, height = 100;
+	QDesktopWidget *desktop = KApplication::desktop();
+	KWindowSystem::setStrut(winId(), 0, 0, 0, height);
+	KWindowSystem::setState(winId(), NET::SkipTaskbar);
+	KWindowSystem::setType(winId(), NET::Dock);
+	setFixedSize(width, height);
+	move((desktop->width() - width) / 2, (desktop->height() - height));
 }
