@@ -45,9 +45,14 @@ DockTaskManager::~DockTaskManager()
 		delete m_icons[i];
 }
 
+void DockTaskManager::setContainerPrivate(DockContainer *container)
+{
+	m_container = container;
+}
+
 void DockTaskManager::setContainer(DockContainer *container)
 {
-	self()->m_container = container;
+	self()->setContainerPrivate(container);
 	for (int i = 0; i < self()->m_icons.size(); i++)
 		container->addWidget(self()->m_icons[i]);
 }
