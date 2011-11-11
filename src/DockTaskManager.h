@@ -44,7 +44,6 @@ public slots:
 	void taskRemoved(TaskPtr task);
 
 private:
-	void setContainerPrivate(DockContainer *container);
 	int findAppByWindowClass(QString name);
 	int findAppByTask(TaskManager::TaskPtr task);
 	void createLauncher(int app_id);
