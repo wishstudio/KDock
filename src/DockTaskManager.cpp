@@ -30,6 +30,8 @@ K_GLOBAL_STATIC(DockTaskManager, globalDockTaskManager)
 
 DockTaskManager::DockTaskManager()
 {
+	m_container = NULL;
+
 	TaskManager::TaskDict taskDict = TaskManager::TaskManager::self()->tasks();
 
 	for (TaskManager::TaskDict::ConstIterator it = taskDict.begin(); it != taskDict.end(); it++)
