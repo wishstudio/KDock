@@ -113,6 +113,7 @@ void DockGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 			QApplication::sendEvent(m_dragParentWidget, &event);
 			m_dragWidget = m_dragParentWidget = NULL;
 			m_dragView->hide();
+			m_dragView->setWidget(NULL);
 		}
 	}
 	else

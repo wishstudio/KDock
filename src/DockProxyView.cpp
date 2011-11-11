@@ -36,7 +36,7 @@ DockProxyView::DockProxyView(QGraphicsWidget *widget, Qt::WidgetAttribute attr)
 	KWindowSystem::setState(winId(), NET::SkipTaskbar);
 	KWindowSystem::setType(winId(), NET::Dock);
 	
-	m_widget = 0;
+	m_widget = NULL;
 	if (widget)
 		setWidget(widget);
 }
@@ -46,10 +46,12 @@ void DockProxyView::setWidget(QGraphicsWidget *widget)
 	if (m_widget)
 		disconnect(m_widget, SIGNAL(geometryChanged()), this, SLOT(widgetGeometryChanged()));
 	m_widget = widget;
-	setScene(m_widget->scene());
-	widgetGeometryChanged();
-	
-	connect(m_widget, SIGNAL(geometryChanged()), this, SLOT(widgetGeometryChanged()));
+	if (widget)
+	{
+		setScene(m_widget->scene());
+		widgetGeometryChanged();
+		connect(m_widget, SIGNAL(geometryChanged()), this, SLOT(widgetGeometryChanged()));
+	}
 }
 
 void DockProxyView::widgetGeometryChanged()
