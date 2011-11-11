@@ -17,30 +17,27 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <Qt>
-#include <QDesktopWidget>
-#include <QWidget>
+#ifndef APPMATCHER_H
+#define APPMATCHER_H
 
-#include <KApplication>
-#include <KMainWindow>
+#include <sys/types.h>
+
+#include <QString>
+
 #include <KWindowSystem>
+#include <taskmanager/taskmanager.h>
 
-#include "DockWindow.h"
-
-DockWindow::DockWindow(QWidget *parent):
-	KMainWindow(parent, Qt::CustomizeWindowHint | Qt::FramelessWindowHint)
+class AppMatcher
 {
-	setAttribute(Qt::WA_TranslucentBackground, true);
-	reposition();
-}
+public:
+	static QString matchTask(TaskManager::TaskPtr task);
+	
+private:
+	static pid_t getWindowPID(WId win);
+	static QString readAllContent(QString file_name);
+	static QString analysisBinaryName(QString cmdline);
+	static QString getProcessName(pid_t pid);
+	static QString getProcessBinaryName(pid_t pid);
+};
 
-void DockWindow::reposition()
-{
-	qreal width = 100, height = 100;
-	QDesktopWidget *desktop = KApplication::desktop();
-	KWindowSystem::setStrut(winId(), 0, 0, 0, height);
-	KWindowSystem::setState(winId(), NET::SkipTaskbar);
-	KWindowSystem::setType(winId(), NET::Dock);
-	setFixedSize(width, height);
-	move((desktop->width() - width) / 2, (desktop->height() - height));
-}
+#endif

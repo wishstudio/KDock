@@ -17,41 +17,27 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QDesktopWidget>
+#include <KWindowSystem>
 
-#include <KApplication>
-#include <KAboutData>
-#include <KCmdLineArgs>
-#include <KLocale>
-
+#include "DockPanel.h"
 #include "DockPanelView.h"
-#include "DockGraphicsScene.h"
 
-int main(int argc, char *argv[])
+DockPanelView::DockPanelView(DockGraphicsScene *scene)
+	: DockProxyView(0, Qt::WA_TranslucentBackground)
 {
-	KAboutData aboutData(
-		"KDock",
-		0,
-		ki18n("KDock"),
-		"0.1",
-		ki18n("A dock for KDE."),
-		KAboutData::License_GPL,
-		ki18n("(c) 2011 KDock Developers"),
-		ki18n(""),
-		"",
-		"");
-	aboutData.addAuthor(ki18n("Xiangyan Sun"), ki18n("Main developer"), "wishstudio@gmail.com", "", "");
-	KCmdLineArgs::init(argc, argv, &aboutData);
-	
-	KApplication app;
-	
-	DockGraphicsScene *scene = new DockGraphicsScene();
-	QDesktopWidget *desktopWidget = QApplication::desktop();
-	scene->setSceneRect(desktopWidget->geometry());
-	
-	DockPanelView *panelView = new DockPanelView(scene);
-	panelView->show();
-	
-	return app.exec();
+	setStyleSheet("border: 0px; background: transparent;");
+	m_panel = new DockPanel(scene);
+	setWidget(m_panel);
+	connect(m_panel, SIGNAL(geometryChanged()), this, SLOT(panelGeometryChanged()));
+	panelGeometryChanged();
+}
+
+DockPanelView::~DockPanelView()
+{
+	delete m_panel;
+}
+
+void DockPanelView::panelGeometryChanged()
+{
+	KWindowSystem::setStrut(winId(), 0, 0, 0, m_panel->size().height());
 }

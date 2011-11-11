@@ -15,18 +15,44 @@
  *   License along with this program; if not, write to the
  *   Free Software Foundation, Inc.,
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */ 
+ */
 
-#include <KMainWindow>
+#ifndef DOCKTASKMANAGER_H
+#define DOCKTASKMANAGER_H
 
-class QWidget;
-class DockWindow: public KMainWindow
+#include <QObject>
+
+#include "taskmanager/taskmanager.h"
+
+#include "DockApp.h"
+#include "DockTaskIcon.h"
+
+using TaskManager::TaskPtr;
+class DockTaskManager: public QObject
 {
 	Q_OBJECT
-	
+
 public:
-	DockWindow(QWidget *parent = 0);
-	
+	DockTaskManager();
+	~DockTaskManager();
+
+	static DockTaskManager *self();
+	static void setContainer(DockContainer *container);
+
+public slots:
+	void taskAdded(TaskPtr task);
+	void taskRemoved(TaskPtr task);
+
 private:
-	void reposition();
+	int findAppByWindowClass(QString name);
+	int findAppByTask(TaskManager::TaskPtr task);
+	void createLauncher(int app_id);
+	void removeLauncher(int app_id);
+	void updateTaskInfo(TaskManager::TaskPtr task, bool allowCreate);
+
+	DockContainer *m_container;
+	QList<DockApp::Ptr> m_apps;
+	QList<DockTaskIcon *> m_icons;
 };
+
+#endif
