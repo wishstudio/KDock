@@ -20,6 +20,9 @@
 #ifndef DOCKPANELVIEW_H
 #define DOCKPANELVIEW_H
 
+#include <X11/Xlib.h>
+#include <fixx11h.h>
+
 #include "DockProxyView.h"
 
 class DockGraphicsScene;
@@ -31,12 +34,24 @@ class DockPanelView: public DockProxyView
 public:
 	DockPanelView(DockGraphicsScene *scene);
 	~DockPanelView();
+
+	Window unhideTrigger() { return m_unhideTrigger; }
+	void checkUnhide(const QPoint &pos);
 	
 public slots:
 	void panelGeometryChanged();
+	void configChanged();
+
+protected:
+	virtual void leaveEvent(QEvent *);
 	
 private:
+	void updateStrut();
+
 	DockPanel *m_panel;
+
+	Window m_unhideTrigger;
+	QRect m_triggerZone;
 };
 
 #endif

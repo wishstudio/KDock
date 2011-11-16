@@ -17,26 +17,30 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef DOCKCONFIG_H
-#define DOCKCONFIG_H
+#ifndef DOCKAPPLICATION_H
+#define DOCKAPPLICATION_H
 
-#include <QEvent>
-#include <QObject>
+#include <KUniqueApplication>
 
-class DockConfig: public QObject
+class DockGraphicsScene;
+class DockPanelView;
+class DockApplication: public KUniqueApplication
 {
 	Q_OBJECT
-	
+
 public:
-	DockConfig();
-	~DockConfig();
-	
-	static DockConfig *self();
-	
-	static qreal iconSize() { return self()->m_iconSize; }
-	
+	DockApplication();
+
+	static DockApplication *self();
+	static void setPanelHidden(bool panelHidden);
+
+protected:
+	virtual bool x11EventFilter(XEvent *event);
+
 private:
-	qreal m_iconSize;
+	DockGraphicsScene *m_scene;
+	DockPanelView *m_panelView;
+	bool m_panelHidden;
 };
 
 #endif

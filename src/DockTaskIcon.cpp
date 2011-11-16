@@ -22,6 +22,7 @@
 #include <KIcon>
 #include <KLocale>
 
+#include "DockConfig.h"
 #include "DockTaskIcon.h"
 
 DockTaskIcon::DockTaskIcon(DockApp::Ptr app, QGraphicsItem *parent)
@@ -35,7 +36,8 @@ void DockTaskIcon::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	if (event->button() == Qt::MidButton)
 	{
-		m_app->launchApp();
+		if (DockConfig::middleClickNewInstance())
+			m_app->launchApp();
 	}
 	else if (event->button() == Qt::LeftButton)
 	{

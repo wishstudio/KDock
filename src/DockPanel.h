@@ -43,8 +43,10 @@ public:
 	
 public slots:
 	void parentChanged();
+	void settingsChanged();
 
 protected:
+	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 	virtual void dockDragStartEvent(DockDragDropEvent *event);
 	virtual void dockDragEnterEvent(DockDragDropEvent *event);
 	virtual void dockDragMoveEvent(DockDragDropEvent *event);

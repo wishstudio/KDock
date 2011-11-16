@@ -17,16 +17,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QDesktopWidget>
-
-#include <KApplication>
 #include <KAboutData>
 #include <KCmdLineArgs>
 #include <KLocale>
 
-#include "DockPanelView.h"
-#include "DockGraphicsScene.h"
+#include "DockApplication.h"
 
 int main(int argc, char *argv[])
 {
@@ -44,14 +39,8 @@ int main(int argc, char *argv[])
 	aboutData.addAuthor(ki18n("Xiangyan Sun"), ki18n("Main developer"), "wishstudio@gmail.com", "", "");
 	KCmdLineArgs::init(argc, argv, &aboutData);
 	
-	KApplication app;
-	
-	DockGraphicsScene *scene = new DockGraphicsScene();
-	QDesktopWidget *desktopWidget = QApplication::desktop();
-	scene->setSceneRect(desktopWidget->geometry());
-	
-	DockPanelView *panelView = new DockPanelView(scene);
-	panelView->show();
-	
-	return app.exec();
+	DockApplication *app = DockApplication::self();
+	int ret = app->exec();
+	delete app;
+	return ret;
 }

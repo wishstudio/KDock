@@ -29,10 +29,10 @@
 #include <KApplication>
 #include <KIcon>
 #include <KStandardDirs>
-#include <KWindowSystem>
 
 #include "AppMatcher.h"
 #include "DockConfig.h"
+#include "DockConfigDialog.h"
 #include "DockContainer.h"
 #include "DockGraphicsScene.h"
 #include "DockIcon.h"
@@ -48,6 +48,7 @@ DockPanel::DockPanel(DockGraphicsScene *scene)
 	DockTaskManager::setContainer(this);
 	
 	connect(this, SIGNAL(parentChanged()), this, SLOT(parentChanged()));
+	connect(DockConfigDialog::self(), SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
 }
 
 qreal DockPanel::getDockLength()
@@ -110,6 +111,13 @@ int DockPanel::getClosestWidget(const QPointF &centerPos)
 	return min;
 }
 
+void DockPanel::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+	Q_UNUSED(event);
+	// TODO
+	DockConfigDialog::showConfigDialog(QApplication::desktop());
+}
+
 void DockPanel::dockDragStartEvent(DockDragDropEvent *event)
 {
 	int id = -1;
@@ -156,6 +164,11 @@ void DockPanel::dockDropEvent(DockDragDropEvent *event)
 }
 
 void DockPanel::parentChanged()
+{
+	reposition();
+}
+
+void DockPanel::settingsChanged()
 {
 	reposition();
 }

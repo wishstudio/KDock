@@ -189,7 +189,7 @@ void DockApp::removeTask(TaskManager::TaskPtr task)
 
 void DockApp::closeTasks()
 {
-	for (QList<TaskManager::TaskPtr>::ConstIterator it = m_tasks.begin(); it != m_tasks.end(); it++)
+	for (QList<TaskManager::TaskPtr>::Iterator it = m_tasks.begin(); it != m_tasks.end(); it++)
 	{
 		TaskManager::TaskPtr task = *it;
 		task->close();

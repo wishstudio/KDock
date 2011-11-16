@@ -17,22 +17,35 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <KGlobal>
+#ifndef DOCKCONFIGDIALOG_H
+#define DOCKCONFIGDIALOG_H
 
-#include "DockConfig.h"
+#include <QObject>
 
-K_GLOBAL_STATIC(DockConfig, globalDockConfig)
+#include "ui_AppearanceConfig.h"
+#include "ui_BehaviorConfig.h"
 
-DockConfig::DockConfig()
+class DockConfigDialog : public QObject
 {
-	m_iconSize = 42;
-}
+	Q_OBJECT
 
-DockConfig::~DockConfig()
-{
-}
+public:
+	DockConfigDialog();
+	virtual ~DockConfigDialog();
 
-DockConfig *DockConfig::self()
-{
-	return globalDockConfig;
-}
+	static DockConfigDialog *self();
+
+	static void showConfigDialog(QWidget *parent = NULL) { return self()->showConfigDialogPrivate(parent); }
+
+signals:
+	void settingsChanged();
+
+private:
+	void showConfigDialogPrivate(QWidget *parent = NULL);
+
+	QWidget *widget_appearanceConfig, *widget_behaviorConfig;
+	Ui::AppearanceConfig appearanceConfig;
+	Ui::BehaviorConfig behaviorConfig;
+};
+
+#endif
