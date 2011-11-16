@@ -77,7 +77,7 @@ void DockIcon::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		if ((event->scenePos() - m_startPos).toPoint().manhattanLength() > QApplication::startDragDistance())
 		{
 			DockGraphicsScene *dockScene = static_cast<DockGraphicsScene *>(scene());
-			dockScene->dragView()->setMask(m_mask);
+			//dockScene->dragView()->setMask(m_mask);
 			dockScene->startDrag(this, event);
 		}
 	}

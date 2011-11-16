@@ -21,17 +21,21 @@
 
 #include <KWindowSystem>
 
+#include <Plasma/WindowEffects>
+
 #include "DockProxyView.h"
 
 // TODO: Find a better way for attr
-DockProxyView::DockProxyView(QGraphicsWidget *widget, Qt::WidgetAttribute attr)
+DockProxyView::DockProxyView(QGraphicsWidget *widget)
 	: QGraphicsView()
 {
+	Plasma::WindowEffects::enableBlurBehind(winId(), false);
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	setStyleSheet("border: 0px;");
-	setAttribute(attr, true); // FIXME: Must be here or window will flick at startup
+	setStyleSheet("border: 0px; background: transparent;");
+	setAttribute(Qt::WA_TranslucentBackground, true);
 	setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+	setFrameShape(QFrame::NoFrame);
 	
 	KWindowSystem::setState(winId(), NET::SkipTaskbar);
 	KWindowSystem::setType(winId(), NET::Dock);

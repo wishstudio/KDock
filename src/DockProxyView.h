@@ -27,7 +27,7 @@ class DockProxyView: public QGraphicsView
 	Q_OBJECT
 	
 public:
-	DockProxyView(QGraphicsWidget *widget = 0, Qt::WidgetAttribute attr = (Qt::WidgetAttribute) 0);
+	DockProxyView(QGraphicsWidget *widget = 0);
 	void setWidget(QGraphicsWidget *widget);
 	
 public slots:

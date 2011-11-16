@@ -29,10 +29,9 @@
 #include "DockPanelView.h"
 
 DockPanelView::DockPanelView(DockGraphicsScene *scene)
-	: DockProxyView(0, Qt::WA_TranslucentBackground), m_unhideTrigger(None)
+	: DockProxyView(0), m_unhideTrigger(None)
 {
 	connect(DockConfig::self(), SIGNAL(configChanged()), this, SLOT(configChanged()));
-	setStyleSheet("border: 0px; background: transparent;");
 	m_panel = new DockPanel(scene);
 	setWidget(m_panel);
 	connect(m_panel, SIGNAL(geometryChanged()), this, SLOT(panelGeometryChanged()));
