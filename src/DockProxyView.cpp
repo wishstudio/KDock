@@ -60,7 +60,7 @@ void DockProxyView::setWidget(QGraphicsWidget *widget)
 
 void DockProxyView::widgetGeometryChanged()
 {
-	resize(m_widget->size().width(), m_widget->size().height());
-	move(m_widget->scenePos().x(), m_widget->scenePos().y());
-	setSceneRect(QRectF(m_widget->scenePos(), m_widget->size()));
+	resize(m_widget->size().toSize());
+	move(m_widget->scenePos().toPoint());
+	setSceneRect(QRectF(m_widget->scenePos().toPoint(), m_widget->size().toSize()));
 }

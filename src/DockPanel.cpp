@@ -17,7 +17,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <qmath.h>
 #include <Qt>
 #include <QApplication>
 #include <QDesktopWidget>
@@ -100,8 +99,10 @@ int DockPanel::getClosestWidget(const QPointF &centerPos)
 	int min = -1;
 	for (int i = 0; i < m_widgets.size() + 1; i++)
 	{
-		QPointF c = mapToScene(getLauncherPosition(i)) + QPointF(DockConfig::iconSize(), DockConfig::iconSize()) / 2 - centerPos;
-		qreal d = qSqrt(c.x() * c.x() + c.y() * c.y()); // Euclidean distance
+		// Current position may not be the final position, mapToScene would get incorrect values
+		// So here we add up the difference
+		QPointF c = mapToScene(getLauncherPosition(i)) + QPointF(DockConfig::iconSize(), DockConfig::iconSize()) / 2 + getPanelPosition() - pos();
+		qreal d = (c - centerPos).manhattanLength();
 		if (min == -1 || d < min_distance)
 		{
 			min_distance = d;
@@ -133,6 +134,8 @@ void DockPanel::dockDragStartEvent(DockDragDropEvent *event)
 
 void DockPanel::dockDragEnterEvent(DockDragDropEvent *event)
 {
+	// A fake dragReserveId to correct position calculation
+	m_dragReserveId = 0;
 	m_dragReserveId = getClosestWidget(event->widget()->geometry().center());
 	reposition();
 }
@@ -173,14 +176,16 @@ void DockPanel::settingsChanged()
 	reposition();
 }
 
+QPointF DockPanel::getPanelPosition()
+{
+	// TODO
+	qreal width = getDockLength(), height = getDockHeight();
+	QRectF sceneRect = QApplication::desktop()->geometry();
+	return QPointF((sceneRect.width() - width) / 2, sceneRect.height() - height);
+}
+
 void DockPanel::reposition()
 {
-	qreal width = getDockLength(), height = getDockHeight();
-	// TODO
-	QRectF sceneRect = QApplication::desktop()->geometry();
-	resize(width, height);
-	setPos((sceneRect.width() - width) / 2, (sceneRect.height() - height));
-
 	for (int i = 0; i < m_widgets.size(); i++)
 	{
 		int posId = i;
@@ -188,4 +193,7 @@ void DockPanel::reposition()
 			posId++;
 		m_widgets[i]->setGeometry(QRectF(getLauncherPosition(posId), QSize(DockConfig::iconSize(), DockConfig::iconSize())));
 	}
+	qreal width = getDockLength(), height = getDockHeight();
+	resize(width, height);
+	setPos(getPanelPosition());
 }

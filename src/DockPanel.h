@@ -62,6 +62,7 @@ private:
 	int getClosestWidget(const QPointF &centerPos);
 
 	QPoint getLauncherPosition(int app_id);
+	QPointF getPanelPosition();
 	void reposition();
 
 	int m_dragReserveId;
