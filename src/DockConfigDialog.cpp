@@ -55,7 +55,5 @@ void DockConfigDialog::showConfigDialogPrivate(QWidget *parent)
 	dialog->addPage(widget_behaviorConfig, i18n("Behavior"), "configure-toolbars");
 	dialog->resize(640, 480);
 
-	connect(dialog, SIGNAL(settingsChanged(QString)), this, SIGNAL(settingsChanged()));
-
 	dialog->show();
 }

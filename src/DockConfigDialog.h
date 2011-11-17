@@ -37,9 +37,6 @@ public:
 
 	static void showConfigDialog(QWidget *parent = NULL) { return self()->showConfigDialogPrivate(parent); }
 
-signals:
-	void settingsChanged();
-
 private:
 	void showConfigDialogPrivate(QWidget *parent = NULL);
 

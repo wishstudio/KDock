@@ -43,7 +43,7 @@ public:
 	
 public slots:
 	void parentChanged();
-	void settingsChanged();
+	void configChanged();
 
 protected:
 	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

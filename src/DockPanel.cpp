@@ -47,7 +47,7 @@ DockPanel::DockPanel(DockGraphicsScene *scene)
 	DockTaskManager::setContainer(this);
 	
 	connect(this, SIGNAL(parentChanged()), this, SLOT(parentChanged()));
-	connect(DockConfigDialog::self(), SIGNAL(settingsChanged()), this, SLOT(settingsChanged()));
+	connect(DockConfig::self(), SIGNAL(configChanged()), this, SLOT(configChanged()));
 }
 
 qreal DockPanel::getDockLength()
@@ -171,7 +171,7 @@ void DockPanel::parentChanged()
 	reposition();
 }
 
-void DockPanel::settingsChanged()
+void DockPanel::configChanged()
 {
 	reposition();
 }
