@@ -37,9 +37,7 @@
 DockIcon::DockIcon(QGraphicsItem *parent):
 	QGraphicsWidget(parent), m_dragable(false)
 {
-	setCursor(Qt::PointingHandCursor);
-
-	connect(this, SIGNAL(geometryChanged()), SLOT(geometryChanged()));
+	connect(DockConfig::self(), SIGNAL(configChanged()), this, SLOT(configChanged()));
 }
 
 DockIcon::~DockIcon()
@@ -49,14 +47,16 @@ DockIcon::~DockIcon()
 void DockIcon::setIcon(const QIcon &icon)
 {
 	m_icon = icon;
-	geometryChanged();
+	configChanged();
 }
 
 void DockIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	Q_UNUSED(option);
 	Q_UNUSED(widget);
-	painter->drawPixmap(QPoint(0, 0), m_pixmap);
+
+	painter->setRenderHint(QPainter::SmoothPixmapTransform);
+	painter->drawPixmap((size().width() - DockConfig::iconSize()) / 2, 0, DockConfig::iconSize(), DockConfig::iconSize(), m_pixmap);
 }
 
 void DockIcon::setDragable(bool dragable)
@@ -77,14 +77,14 @@ void DockIcon::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		if ((event->scenePos() - m_startPos).toPoint().manhattanLength() > QApplication::startDragDistance())
 		{
 			DockGraphicsScene *dockScene = static_cast<DockGraphicsScene *>(scene());
-			//dockScene->dragView()->setMask(m_mask);
+			setPos(pos() + event->scenePos() - m_startPos);
 			dockScene->startDrag(this, event);
 		}
 	}
 }
 
-void DockIcon::geometryChanged()
+void DockIcon::configChanged()
 {
-	m_pixmap = m_icon.pixmap(size().width(), size().height());
-	m_mask = m_pixmap.createHeuristicMask();
+	m_pixmap = m_icon.pixmap(DockConfig::iconSize() * 2, DockConfig::iconSize() * 2);
+	emit update();
 }

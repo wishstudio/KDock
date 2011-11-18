@@ -52,18 +52,24 @@ protected:
 	virtual void dockDragMoveEvent(DockDragDropEvent *event);
 	virtual void dockDragLeaveEvent(DockDragDropEvent *event);
 	virtual void dockDropEvent(DockDragDropEvent *event);
+	virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+	virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 	
 private:
-	qreal getDockLength();
-	qreal getDockHeight();
-	qreal getDockLengthEdgeSpacing();
-	qreal getDockHeightEdgeSpacing();
-	qreal getLauncherSpacing();
-	int getClosestWidget(const QPointF &centerPos);
+	qreal getIconLength() const;
+	qreal getDockLength() const;
+	qreal getDockHeight() const;
+	qreal getDockLengthEdgeSpacing() const;
+	qreal getDockHeightEdgeSpacing() const;
+	int getClosestWidget(const QPointF &centerPos) const;
 
-	QPoint getLauncherPosition(int app_id);
-	QPointF getPanelPosition();
+	QPointF getLauncherPosition(int app_id) const;
+	QPointF getPanelPosition() const;
 	void reposition();
+	void hoverTransform();
+
+	int m_hoverId;
+	QPointF m_hoverPos;
 
 	int m_dragReserveId;
 	QList<QGraphicsWidget *> m_widgets;

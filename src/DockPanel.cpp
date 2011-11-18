@@ -39,45 +39,46 @@
 #include "DockTaskManager.h"
 
 DockPanel::DockPanel(DockGraphicsScene *scene)
-	: DockContainer(), m_dragReserveId(-1)
+	: DockContainer(), m_hoverId(-1), m_dragReserveId(-1)
 {
 	scene->addItem(this);
 	reposition();
 
 	DockTaskManager::setContainer(this);
-	
+	setAcceptHoverEvents(true);
+
 	connect(this, SIGNAL(parentChanged()), this, SLOT(parentChanged()));
 	connect(DockConfig::self(), SIGNAL(configChanged()), this, SLOT(configChanged()));
 }
 
-qreal DockPanel::getDockLength()
+qreal DockPanel::getIconLength() const
 {
-	return (getDockLengthEdgeSpacing() * 2 - getLauncherSpacing()) + ((m_widgets.size() + (m_dragReserveId >= 0)) * (DockConfig::iconSize() + getLauncherSpacing()));
+	return DockConfig::iconSize() * 1.1;
 }
 
-qreal DockPanel::getDockHeight()
+qreal DockPanel::getDockLength() const
+{
+	return getDockLengthEdgeSpacing() * 2 + ((m_widgets.size() + (m_dragReserveId >= 0)) * getIconLength());
+}
+
+qreal DockPanel::getDockHeight() const
 {
 	return DockConfig::iconSize() + getDockHeightEdgeSpacing() * 2;
 }
 
-qreal DockPanel::getDockLengthEdgeSpacing()
+qreal DockPanel::getDockLengthEdgeSpacing() const
 {
 	return DockConfig::iconSize() / 1.7;
 }
 
-qreal DockPanel::getDockHeightEdgeSpacing()
+qreal DockPanel::getDockHeightEdgeSpacing() const
 {
 	return DockConfig::iconSize() / 5;
 }
 
-qreal DockPanel::getLauncherSpacing()
+QPointF DockPanel::getLauncherPosition(int app_id) const
 {
-	return DockConfig::iconSize() / 4;
-}
-
-QPoint DockPanel::getLauncherPosition(int app_id)
-{
-	return QPoint(getDockLengthEdgeSpacing() + app_id * (DockConfig::iconSize() + getLauncherSpacing()), getDockHeightEdgeSpacing() / 1.1);
+	return QPointF(getDockLengthEdgeSpacing() + app_id * getIconLength(), getDockHeightEdgeSpacing() / 1.1);
 }
 
 void DockPanel::addWidget(QGraphicsWidget *widget)
@@ -93,7 +94,7 @@ void DockPanel::removeWidget(QGraphicsWidget *widget)
 	reposition();
 }
 
-int DockPanel::getClosestWidget(const QPointF &centerPos)
+int DockPanel::getClosestWidget(const QPointF &centerPos) const
 {
 	qreal min_distance;
 	int min = -1;
@@ -176,7 +177,7 @@ void DockPanel::configChanged()
 	reposition();
 }
 
-QPointF DockPanel::getPanelPosition()
+QPointF DockPanel::getPanelPosition() const
 {
 	// TODO
 	qreal width = getDockLength(), height = getDockHeight();
@@ -191,9 +192,95 @@ void DockPanel::reposition()
 		int posId = i;
 		if (m_dragReserveId >= 0 && i >= m_dragReserveId)
 			posId++;
-		m_widgets[i]->setGeometry(QRectF(getLauncherPosition(posId), QSize(DockConfig::iconSize(), DockConfig::iconSize())));
+		m_widgets[i]->setGeometry(QRectF(getLauncherPosition(posId), QSize(getIconLength(), DockConfig::iconSize())));
 	}
 	qreal width = getDockLength(), height = getDockHeight();
 	resize(width, height);
 	setPos(getPanelPosition());
+	hoverTransform();
+}
+
+void DockPanel::hoverTransform()
+{
+	for (int i = 0; i < m_widgets.size(); i++)
+		m_widgets[i]->resetTransform();
+	if (m_hoverId != -1)
+	{
+		// Position calculation algorithm:
+		//
+		// Original:
+		//              hId
+		//     +--+--+--+--+--+--+--+
+		//     |  |  |  |M |  |  |  |
+		//  ---+--+--+--+--+--+--+--+-
+		//
+		// Transformed:
+		//
+		//               hId
+		//              +----+
+		//          +---+    +---+
+		//    +--+--+   | M  |   +--+--+
+		//    |  |  |   |    |   |  |  |
+		//  --+--+--+---+----+---+--+--+--
+		//
+		// We have to keep the mouse position consistent with the scaled image
+		// Thus we have
+		//
+		//   (M.x - hId.x) / old_size = (M.x' - hId.x') / hover_size
+		//
+		// Then for left and right icons, decrease their size by their distance to mouse point:
+		//
+		//   id.size = max(hover_size - dist * step, old_size)
+		//
+		// where step is a constant, dist is M.x - id.right for left icons, id.left - M.x for right icons
+
+		const qreal hoverItemSize = getIconLength() * 1.4;
+		const QPointF localPos = mapFromScene(m_hoverPos);
+		const qreal step = (hoverItemSize - getIconLength()) / (2 * getIconLength());
+
+		const qreal dLeft = localPos.x() - m_widgets[m_hoverId]->x();
+		qreal d = dLeft / getIconLength() * hoverItemSize - dLeft;
+		m_widgets[m_hoverId]->translate(-d, -m_widgets[m_hoverId]->size().height() * ((hoverItemSize - getIconLength()) / getIconLength()));
+		m_widgets[m_hoverId]->scale(hoverItemSize / getIconLength(), hoverItemSize / getIconLength());
+		for (int i = m_hoverId - 1; i >= 0; i--)
+		{
+			qreal hSize = qMax(getIconLength(), hoverItemSize - (localPos.x() - m_widgets[i]->geometry().right()) * step);
+			d += hSize - getIconLength();
+			m_widgets[i]->translate(-d, -m_widgets[i]->size().height() * ((hSize - getIconLength()) / getIconLength()));
+			m_widgets[i]->scale(hSize / getIconLength(), hSize / getIconLength());
+		}
+		qreal dRight = getIconLength() - dLeft;
+		d = dRight / getIconLength() * hoverItemSize - dRight;
+		for (int i = m_hoverId + 1; i < m_widgets.size(); i++)
+		{
+			qreal hSize = qMax(getIconLength(), hoverItemSize - (m_widgets[i]->geometry().left() - localPos.x()) * step);
+			m_widgets[i]->translate(d, -m_widgets[i]->size().height() * ((hSize - getIconLength()) / getIconLength()));
+			m_widgets[i]->scale(hSize / getIconLength(), hSize / getIconLength());
+			d += hSize - getIconLength();
+		}
+	}
+}
+
+void DockPanel::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+	m_hoverId = -1;
+	for (int i = 0; i < m_widgets.size(); i++)
+	{
+		// toPoint() for FuzzyCompare at 0 and w
+		QPoint localPos = m_widgets[i]->mapFromScene(event->scenePos()).toPoint();
+		if (m_widgets[i]->boundingRect().contains(localPos))
+		{
+			m_hoverId = i;
+			break;
+		}
+	}
+	m_hoverPos = event->scenePos();
+	hoverTransform();
+}
+
+void DockPanel::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+	Q_UNUSED(event);
+	m_hoverId = -1;
+	hoverTransform();
 }

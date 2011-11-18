@@ -43,7 +43,9 @@ public:
 
 	void setDragable(bool dragable);
 	void setIcon(const QIcon &icon);
-	const QPixmap &mask() { return m_mask; }
+
+public slots:
+	void configChanged();
 	
 signals:
 	void beginIconDrag(DockIcon *obj);
@@ -62,9 +64,6 @@ private:
 	QBitmap m_mask;
 
 	bool m_dragable;
-
-private slots:
-	void geometryChanged();
 }; 
 
 #endif
