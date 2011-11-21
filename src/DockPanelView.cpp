@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QX11Info>
+#include <QDebug>
 
 #include <KWindowSystem>
 
@@ -32,7 +33,7 @@ DockPanelView::DockPanelView(DockGraphicsScene *scene)
 	: DockProxyView(0), m_unhideTrigger(None)
 {
 	connect(DockConfig::self(), SIGNAL(configChanged()), this, SLOT(configChanged()));
-	m_panel = new DockPanel(scene);
+	m_panel = new DockPanel(scene, this);
 	setWidget(m_panel);
 	connect(m_panel, SIGNAL(geometryChanged()), this, SLOT(panelGeometryChanged()));
 	panelGeometryChanged();
@@ -50,8 +51,13 @@ void DockPanelView::panelGeometryChanged()
 
 void DockPanelView::configChanged()
 {
-	updateStrut();
 	show();
+}
+
+void DockPanelView::setViewGeometry(const QRect &rect)
+{
+	setGeometry(rect);
+	setSceneRect(rect);
 }
 
 void DockPanelView::checkUnhide(const QPoint &pos)

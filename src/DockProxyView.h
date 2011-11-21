@@ -30,9 +30,6 @@ public:
 	DockProxyView(QGraphicsWidget *widget = 0);
 	void setWidget(QGraphicsWidget *widget);
 	
-public slots:
-	void widgetGeometryChanged();
-	
 private:
 	QGraphicsWidget *m_widget;
 };

@@ -37,6 +37,7 @@ public:
 
 	Window unhideTrigger() { return m_unhideTrigger; }
 	void checkUnhide(const QPoint &pos);
+	void setViewGeometry(const QRect &rect);
 	
 public slots:
 	void panelGeometryChanged();

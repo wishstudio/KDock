@@ -25,7 +25,6 @@
 
 #include "DockProxyView.h"
 
-// TODO: Find a better way for attr
 DockProxyView::DockProxyView(QGraphicsWidget *widget)
 	: QGraphicsView()
 {
@@ -47,20 +46,7 @@ DockProxyView::DockProxyView(QGraphicsWidget *widget)
 
 void DockProxyView::setWidget(QGraphicsWidget *widget)
 {
-	if (m_widget)
-		disconnect(m_widget, SIGNAL(geometryChanged()), this, SLOT(widgetGeometryChanged()));
 	m_widget = widget;
 	if (widget)
-	{
 		setScene(m_widget->scene());
-		widgetGeometryChanged();
-		connect(m_widget, SIGNAL(geometryChanged()), this, SLOT(widgetGeometryChanged()));
-	}
-}
-
-void DockProxyView::widgetGeometryChanged()
-{
-	resize(m_widget->size().toSize());
-	move(m_widget->scenePos().toPoint());
-	setSceneRect(QRectF(m_widget->scenePos().toPoint(), m_widget->size().toSize()));
 }
