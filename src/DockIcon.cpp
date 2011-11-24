@@ -50,18 +50,19 @@ void DockIcon::setIcon(const QIcon &icon)
 	configChanged();
 }
 
+void DockIcon::setDragable(bool dragable)
+{
+	m_dragable = dragable;
+}
+
 void DockIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 	Q_UNUSED(option);
 	Q_UNUSED(widget);
 
 	painter->setRenderHint(QPainter::SmoothPixmapTransform);
-	painter->drawPixmap((size().width() - DockConfig::iconSize()) / 2, 0, DockConfig::iconSize(), DockConfig::iconSize(), m_pixmap);
-}
-
-void DockIcon::setDragable(bool dragable)
-{
-	m_dragable = dragable;
+	qreal iconSize = size().height();
+	painter->drawPixmap((size().width() - iconSize) / 2, 0, iconSize, iconSize, m_pixmap);
 }
 
 void DockIcon::mousePressEvent(QGraphicsSceneMouseEvent *event)

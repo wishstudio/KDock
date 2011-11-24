@@ -41,12 +41,12 @@ bool DockContainer::event(QEvent *event)
 	return event->isAccepted();
 }
 
-void DockContainer::addWidget(QGraphicsWidget *widget)
+void DockContainer::addWidget(DockIcon *widget)
 {
 	Q_UNUSED(widget);
 }
 
-void DockContainer::removeWidget(QGraphicsWidget *widget)
+void DockContainer::removeWidget(DockIcon *widget)
 {
 	Q_UNUSED(widget);
 }

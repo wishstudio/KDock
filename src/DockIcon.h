@@ -36,7 +36,7 @@ class DockWindow;
 class DockIcon: public QGraphicsWidget
 {
 	Q_OBJECT
-	
+
 public:
 	DockIcon(QGraphicsItem *parent = NULL);
 	~DockIcon();
