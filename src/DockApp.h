@@ -20,11 +20,8 @@
 #ifndef DOCKAPP_H
 #define DOCKAPP_H
 
-#include <QList>
-#include <QString>
 #include <QObject>
 
-#include <KSharedPtr>
 #include <KWindowInfo>
 
 namespace TaskManager
@@ -32,13 +29,11 @@ namespace TaskManager
 class Task;
 }
 
-class DockApp: public QObject, public KShared
+class DockApp: public QObject
 {
 	Q_OBJECT
 	
 public:
-	typedef KSharedPtr<DockApp> Ptr;
-	
 	DockApp(QString desktop_file, bool isLauncher);
 	DockApp(QString executable, QString icon, QString name, QString startup_wm_class);
 	void launchApp();
@@ -46,7 +41,7 @@ public:
 	bool runnable();
 	
 	static bool validQList(const QList<QString> &values);
-	static DockApp::Ptr fromQList(const QList<QString> &values);
+	static DockApp *fromQList(const QList<QString> &values);
 	QList<QString> toQList();
 	
 	bool isLauncher();

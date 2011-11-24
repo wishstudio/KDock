@@ -26,13 +26,13 @@
 
 #include <taskmanager/taskmanager.h>
 
-#include "DockApp.h"
 #include "DockContainer.h"
 
 class QParallelAnimationGroup;
 class QPropertyAnimation;
 class QSvgRenderer;
 class QWidget;
+class DockApp;
 class DockGraphicsScene;
 class DockIcon;
 class DockPanelView;

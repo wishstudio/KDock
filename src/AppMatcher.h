@@ -22,8 +22,6 @@
 
 #include <sys/types.h>
 
-#include <QString>
-
 #include <KWindowSystem>
 #include <taskmanager/taskmanager.h>
 

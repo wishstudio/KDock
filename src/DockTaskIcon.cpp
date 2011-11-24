@@ -24,10 +24,11 @@
 
 #include <taskmanager/taskmanager.h>
 
+#include "DockApp.h"
 #include "DockConfig.h"
 #include "DockTaskIcon.h"
 
-DockTaskIcon::DockTaskIcon(DockApp::Ptr app, QGraphicsItem *parent)
+DockTaskIcon::DockTaskIcon(DockApp *app, QGraphicsItem *parent)
 	: DockIcon(parent), m_app(app)
 {
 	setDragable(true);

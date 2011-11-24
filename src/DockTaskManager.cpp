@@ -23,7 +23,9 @@
 #include <KStandardDirs>
 
 #include "AppMatcher.h"
+#include "DockApp.h"
 #include "DockContainer.h"
+#include "DockTaskIcon.h"
 #include "DockTaskManager.h"
 
 K_GLOBAL_STATIC(DockTaskManager, globalDockTaskManager)
@@ -120,7 +122,7 @@ void DockTaskManager::updateTaskInfo(::TaskManager::Task *task, bool allowCreate
 		QString desktop_file = AppMatcher::matchTask(task);
 		if (!desktop_file.isEmpty()) // Desktop file found
 		{
-			m_apps.append(DockApp::Ptr(new DockApp(desktop_file, false)));
+			m_apps.append(new DockApp(desktop_file, false));
 			app_id = m_apps.size() - 1;
 			createLauncher(app_id);
 		}
@@ -129,7 +131,7 @@ void DockTaskManager::updateTaskInfo(::TaskManager::Task *task, bool allowCreate
 			QString exe = KStandardDirs::findExe(task->className().toLower());
 			if (exe.isEmpty())
 				exe = KStandardDirs::findExe(task->className());
-			m_apps.append(DockApp::Ptr(new DockApp(exe, task->visibleName(), task->className(), task->className())));
+			m_apps.append(new DockApp(exe, task->visibleName(), task->className(), task->className()));
 			app_id = m_apps.size() - 1;
 			createLauncher(app_id);
 		}

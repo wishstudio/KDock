@@ -29,8 +29,7 @@
 
 #include <KMenu>
 
-#include "DockApp.h"
-
+class DockApp;
 class DockProxyView;
 class DockWindow;
 class DockIcon: public QGraphicsWidget

@@ -22,9 +22,8 @@
 
 #include <QObject>
 
-#include "DockApp.h"
-#include "DockTaskIcon.h"
-
+class DockApp;
+class DockTaskIcon;
 namespace TaskManager
 {
 class Task;
@@ -53,7 +52,7 @@ private:
 	void updateTaskInfo(::TaskManager::Task *task, bool allowCreate);
 
 	DockContainer *m_container;
-	QList<DockApp::Ptr> m_apps;
+	QList<DockApp *> m_apps;
 	QList<DockTaskIcon *> m_icons;
 };
 

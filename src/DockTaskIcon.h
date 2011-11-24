@@ -20,15 +20,15 @@
 #ifndef DOCKTASKICON_H
 #define DOCKTASKICON_H
 
-#include "DockApp.h"
 #include "DockIcon.h"
 
+class DockApp;
 class DockTaskIcon: public DockIcon
 {
 	Q_OBJECT
 
 public:
-	DockTaskIcon(DockApp::Ptr app, QGraphicsItem *parent = NULL);
+	DockTaskIcon(DockApp *app, QGraphicsItem *parent = NULL);
 
 public slots:
 	void taskMenuClicked();
@@ -41,7 +41,7 @@ protected:
 	void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
-	DockApp::Ptr m_app;
+	DockApp *m_app;
 	QList<TaskManager::Task *> tmp_taskList;
 	KMenu tmp_taskMenu;
 };

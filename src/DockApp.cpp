@@ -98,17 +98,17 @@ bool DockApp::validQList(const QList<QString> &values)
 		return values.size() == 4;
 }
 
-DockApp::Ptr DockApp::fromQList(const QList<QString> &values)
+DockApp *DockApp::fromQList(const QList<QString> &values)
 {
 	QString executable = values[0];
 	if (KDesktopFile::isDesktopFile(executable))
-		return DockApp::Ptr(new DockApp(executable, true));
+		return new DockApp(executable, true);
 	else
 	{
 		QString icon = values[1];
 		QString name = values[2];
 		QString wm_class = values[3];
-		return DockApp::Ptr(new DockApp(executable, icon, name, wm_class));
+		return new DockApp(executable, icon, name, wm_class);
 	}
 }
 
