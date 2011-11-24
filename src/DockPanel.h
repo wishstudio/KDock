@@ -30,6 +30,8 @@
 #include "DockContainer.h"
 
 using TaskManager::TaskPtr;
+class QParallelAnimationGroup;
+class QPropertyAnimation;
 class QSvgRenderer;
 class QWidget;
 class DockGraphicsScene;
@@ -38,18 +40,25 @@ class DockPanelView;
 class DockPanel: public DockContainer
 {
 	Q_OBJECT
+	Q_PROPERTY(qreal leftOffset READ leftOffset WRITE setLeftOffset)
+	Q_PROPERTY(qreal rightOffset READ rightOffset WRITE setRightOffset)
 	
 public:
 	DockPanel(DockGraphicsScene *scene, DockPanelView *view);
 	virtual ~DockPanel();
 
 	QSize normalSize() const;
-	void addWidget(QGraphicsWidget *widget);
-	void removeWidget(QGraphicsWidget *widget);
+	void addWidget(DockIcon *widget);
+	void removeWidget(DockIcon *widget);
+	qreal leftOffset() const { return m_leftOffset; }
+	void setLeftOffset(qreal leftOffset);
+	qreal rightOffset() const { return m_rightOffset; }
+	void setRightOffset(qreal rightOffset);
 	
 public slots:
 	void parentChanged();
 	void configChanged();
+	void resetMasks();
 
 signals:
 	void setViewGeometry(QRect rect);
@@ -82,9 +91,8 @@ private:
 	QPoint getLauncherPosition(int app_id) const;
 	QPoint getPanelPosition() const;
 	void reposition();
-	void resetMasks();
 	void calcMasks();
-	void hoverTransform();
+	void hoverAnimation();
 
 	DockPanelView *m_view;
 
@@ -93,11 +101,15 @@ private:
 	QBitmap m_leftMask, m_centerMask, m_rightMask;
 	QBitmap m_normalMask, m_hoverMask;
 
+	QParallelAnimationGroup *m_hoverAnimation;
+	QPropertyAnimation *m_leftAnimation, *m_rightAnimation;
+	QList<QPropertyAnimation *> m_widgetAnimations;
+
 	int m_hoverId;
 	QPointF m_hoverPos;
 
 	int m_dragReserveId;
-	QList<QGraphicsWidget *> m_widgets;
+	QList<DockIcon *> m_widgets;
 	KMenu m_contextMenu;
 };
 

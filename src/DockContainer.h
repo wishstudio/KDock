@@ -24,6 +24,7 @@
 
 #include "DockDragDropEvent.h"
 
+class DockIcon;
 class DockContainer: public QGraphicsWidget
 {
 	Q_OBJECT
@@ -31,8 +32,8 @@ class DockContainer: public QGraphicsWidget
 public:
 	DockContainer(QGraphicsItem *parent = NULL);
 
-	virtual void addWidget(QGraphicsWidget *widget);
-	virtual void removeWidget(QGraphicsWidget *widget);
+	virtual void addWidget(DockIcon *widget);
+	virtual void removeWidget(DockIcon *widget);
 
 protected:
 	virtual bool event(QEvent *event);
