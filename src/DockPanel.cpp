@@ -25,7 +25,6 @@
 #include <QList>
 #include <QSvgRenderer>
 #include <QWidget>
-#include <QDebug>
 
 #include <KApplication>
 #include <KIcon>
@@ -46,7 +45,7 @@ DockPanel::DockPanel(DockGraphicsScene *scene, DockPanelView *view)
 {
 	m_svg = new QSvgRenderer(QString("skins/default.svgz"));
 	scene->addItem(this);
-	reposition();
+	configChanged();
 
 	DockTaskManager::setContainer(this);
 	setAcceptHoverEvents(true);
@@ -120,7 +119,12 @@ int DockPanel::getDockHeightEdgeSpacing() const
 
 QPoint DockPanel::getLauncherPosition(int app_id) const
 {
-	return QPoint(getDockLeftSpacing() + app_id * getIconLength(), 0);
+	return QPoint(getReservedLength() + getDockLeftSpacing() + app_id * getIconLength(), getReservedHeight());
+}
+
+QSize DockPanel::normalSize() const
+{
+	return QSize(getDockLength(), getDockHeight());
 }
 
 void DockPanel::addWidget(QGraphicsWidget *widget)
@@ -128,12 +132,14 @@ void DockPanel::addWidget(QGraphicsWidget *widget)
 	widget->setParentItem(this);
 	m_widgets.append(widget);
 	reposition();
+	resetMasks();
 }
 
 void DockPanel::removeWidget(QGraphicsWidget *widget)
 {
 	m_widgets.removeOne(widget);
 	reposition();
+	resetMasks();
 }
 
 int DockPanel::getClosestWidget(const QPointF &centerPos) const
@@ -161,13 +167,13 @@ void DockPanel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	Q_UNUSED(widget);
 
 	// Left
-	m_svg->render(painter, "south-left", QRectF(-m_leftOffset, 0, getDockLeftSpacing(), getDockHeight()));
+	m_svg->render(painter, "south-left", QRectF(getReservedLength() - m_leftOffset, getReservedHeight(), getDockLeftSpacing(), getDockHeight()));
 
 	// Center
-	m_svg->render(painter, "south-center", QRectF(-m_leftOffset + getDockLeftSpacing(), 0, getDockCenterSpacing() + m_leftOffset + m_rightOffset, getDockHeight()));
+	m_svg->render(painter, "south-center", QRectF(getReservedLength() - m_leftOffset + getDockLeftSpacing(), getReservedHeight(), getDockCenterSpacing() + m_leftOffset + m_rightOffset, getDockHeight()));
 
 	// Right
-	m_svg->render(painter, "south-right", QRectF(getDockLeftSpacing() + getDockCenterSpacing() + m_rightOffset, 0, getDockRightSpacing(), getDockHeight()));
+	m_svg->render(painter, "south-right", QRectF(getReservedLength() + getDockLeftSpacing() + getDockCenterSpacing() + m_rightOffset, getReservedHeight(), getDockRightSpacing(), getDockHeight()));
 }
 
 void DockPanel::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -232,14 +238,16 @@ void DockPanel::parentChanged()
 void DockPanel::configChanged()
 {
 	reposition();
+	calcMasks();
+	resetMasks();
 }
 
 QPoint DockPanel::getPanelPosition() const
 {
 	// TODO
-	qreal width = getDockLength(), height = getDockHeight();
+	QSize mysize = size().toSize();
 	QRectF sceneRect = QApplication::desktop()->geometry();
-	return QPoint((sceneRect.width() - width) / 2, sceneRect.height() - height);
+	return QPoint((sceneRect.width() - mysize.width()) / 2, sceneRect.height() - mysize.height());
 }
 
 void DockPanel::reposition()
@@ -253,19 +261,44 @@ void DockPanel::reposition()
 	}
 	QPoint position = getPanelPosition();
 	qreal width = getDockLength(), height = getDockHeight();
-	resize(width, height);
+	resize(width + getReservedLength() * 2, height + getReservedHeight());
 	setPos(position);
 	hoverTransform();
-	m_view->setViewGeometry(QRect(position - QPoint(getReservedLength(), getReservedHeight()), QSize(width + getReservedLength() * 2, height + getReservedHeight())));
+	m_view->setViewGeometry(QRect(position, size().toSize()));
 }
 
-void DockPanel::calcCenterMask()
+void DockPanel::resetMasks()
 {
+	QBitmap mask(getDockLength() + getReservedLength() * 2, getDockHeight() + getReservedHeight());
+	QPainter painter(&mask);
+	if (m_hoverId == -1)
+	{
+		mask.fill(Qt::color0);
+		painter.drawPixmap(getReservedLength(), getReservedHeight(), getDockLeftSpacing(), getDockHeight(), m_leftMask);
+		painter.fillRect(getReservedLength() + getDockLeftSpacing(), getReservedHeight(), getDockCenterSpacing(), getDockHeight(), Qt::color1);
+		painter.drawPixmap(getReservedLength() + getDockLeftSpacing() + getDockCenterSpacing(), getReservedHeight(), getDockRightSpacing(), getDockHeight(), m_rightMask);
+	}
+	else
+		mask.fill(Qt::color1);
+	m_view->setMask(mask);
 }
 
-void DockPanel::calcAllMask()
+void DockPanel::calcMasks()
 {
-	calcCenterMask();
+	{
+		QPixmap pixmap(getDockLeftSpacing(), getDockHeight());
+		QPainter painter(&pixmap);
+		pixmap.fill(Qt::black);
+		m_svg->render(&painter, "south-left");
+		m_leftMask = pixmap.createMaskFromColor(Qt::black);
+	}
+	{
+		QPixmap pixmap(getDockRightSpacing(), getDockHeight());
+		QPainter painter(&pixmap);
+		pixmap.fill(Qt::black);
+		m_svg->render(&painter, "south-right");
+		m_rightMask = pixmap.createMaskFromColor(Qt::black);
+	}
 }
 
 void DockPanel::hoverTransform()
@@ -329,15 +362,16 @@ void DockPanel::hoverTransform()
 	}
 	else
 		m_leftOffset = m_rightOffset = 0;
-	setWindowFrameMargins(m_leftOffset, 0, m_rightOffset, 0);
+	emit update();
 }
 
 void DockPanel::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
+	bool hoverIn = m_hoverId == -1;
 	m_hoverId = -1;
 	for (int i = 0; i < m_widgets.size(); i++)
 	{
-		// toPoint() for FuzzyCompare at 0 and w
+		// toPoint() for fuzzy comparison at 0 and w
 		QPoint localPos = m_widgets[i]->mapFromScene(event->scenePos()).toPoint();
 		if (m_widgets[i]->boundingRect().contains(localPos))
 		{
@@ -345,8 +379,15 @@ void DockPanel::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 			break;
 		}
 	}
-	m_hoverPos = event->scenePos();
-	hoverTransform();
+	if (m_hoverId != -1)
+	{
+		m_hoverPos = event->scenePos();
+		hoverTransform();
+		if (hoverIn)
+			resetMasks();
+	}
+	else if (!hoverIn)
+		hoverLeaveEvent(event);
 }
 
 void DockPanel::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
@@ -354,4 +395,5 @@ void DockPanel::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 	Q_UNUSED(event);
 	m_hoverId = -1;
 	hoverTransform();
+	resetMasks();
 }

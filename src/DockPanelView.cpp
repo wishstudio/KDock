@@ -20,7 +20,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QX11Info>
-#include <QDebug>
 
 #include <KWindowSystem>
 
@@ -98,7 +97,7 @@ void DockPanelView::leaveEvent(QEvent *)
 void DockPanelView::updateStrut()
 {
 	if (DockConfig::alwaysShow())
-		KWindowSystem::setStrut(winId(), 0, 0, 0, m_panel->size().height());
+		KWindowSystem::setStrut(winId(), 0, 0, 0, m_panel->normalSize().height());
 	else
 		KWindowSystem::setStrut(winId(), 0, 0, 0, 0);
 }

@@ -43,6 +43,7 @@ public:
 	DockPanel(DockGraphicsScene *scene, DockPanelView *view);
 	virtual ~DockPanel();
 
+	QSize normalSize() const;
 	void addWidget(QGraphicsWidget *widget);
 	void removeWidget(QGraphicsWidget *widget);
 	
@@ -81,8 +82,8 @@ private:
 	QPoint getLauncherPosition(int app_id) const;
 	QPoint getPanelPosition() const;
 	void reposition();
-	void calcCenterMask();
-	void calcAllMask();
+	void resetMasks();
+	void calcMasks();
 	void hoverTransform();
 
 	DockPanelView *m_view;

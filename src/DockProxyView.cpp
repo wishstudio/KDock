@@ -33,7 +33,7 @@ DockProxyView::DockProxyView(QGraphicsWidget *widget)
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	setStyleSheet("border: 0px; background: transparent;");
 	setAttribute(Qt::WA_TranslucentBackground, true);
-	setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
+	setWindowFlags(Qt::FramelessWindowHint);
 	setFrameShape(QFrame::NoFrame);
 	
 	KWindowSystem::setState(winId(), NET::SkipTaskbar);
