@@ -30,7 +30,7 @@
 class AppMatcher
 {
 public:
-	static QString matchTask(TaskManager::TaskPtr task);
+	static QString matchTask(TaskManager::Task *task);
 	
 private:
 	static pid_t getWindowPID(WId win);

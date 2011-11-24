@@ -27,7 +27,10 @@
 #include <KSharedPtr>
 #include <KWindowInfo>
 
-#include <taskmanager/taskmanager.h>
+namespace TaskManager
+{
+class Task;
+}
 
 class DockApp: public QObject, public KShared
 {
@@ -54,11 +57,11 @@ public:
 	QString command();
 	QString wm_class();
 	
-	QList<TaskManager::TaskPtr> tasks();
+	QList< ::TaskManager::Task *> tasks();
 	void clearTasks();
 	int countTasks();
-	void addTask(TaskManager::TaskPtr task);
-	void removeTask(TaskManager::TaskPtr task);
+	void addTask(::TaskManager::Task *task);
+	void removeTask(::TaskManager::Task *task);
 	void closeTasks();
 	
 public slots:
@@ -69,7 +72,7 @@ private:
 	bool m_isLauncher;
 	QString m_executable, m_icon, m_name, m_command, m_wm_class;
 	
-	QList<TaskManager::TaskPtr> m_tasks;
+	QList< ::TaskManager::Task *> m_tasks;
 	
 signals:
 	void appChanged();

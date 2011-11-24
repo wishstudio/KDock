@@ -402,7 +402,6 @@ void DockPanel::hoverAnimation()
 			int posId = i;
 			if (m_dragReserveId >= 0 && i >= m_dragReserveId)
 				posId++;
-			//m_widgets[i]->setGeometry(QRectF(getLauncherPosition(posId), QSize(getIconLength(), DockConfig::iconSize())));
 			m_widgetAnimations[i]->setEndValue(QRectF(getLauncherPosition(posId), QSize(getIconLength(), DockConfig::iconSize())));
 		}
 	}

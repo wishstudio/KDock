@@ -32,13 +32,13 @@ DockTaskManager::DockTaskManager()
 {
 	m_container = NULL;
 
-	TaskManager::TaskDict taskDict = TaskManager::TaskManager::self()->tasks();
+	QHash<WId, ::TaskManager::Task *> taskDict = ::TaskManager::TaskManager::self()->tasks();
 
-	for (TaskManager::TaskDict::ConstIterator it = taskDict.begin(); it != taskDict.end(); it++)
+	for (QHash<WId, ::TaskManager::Task *>::ConstIterator it = taskDict.begin(); it != taskDict.end(); it++)
 		updateTaskInfo(*it, true);
 
-	connect(TaskManager::TaskManager::self(), SIGNAL(taskAdded(TaskPtr)), this, SLOT(taskAdded(TaskPtr)));
-	connect(TaskManager::TaskManager::self(), SIGNAL(taskRemoved(TaskPtr)), this, SLOT(taskRemoved(TaskPtr)));
+	connect(::TaskManager::TaskManager::self(), SIGNAL(taskAdded(::TaskManager::Task*)), this, SLOT(taskAdded(::TaskManager::Task*)));
+	connect(::TaskManager::TaskManager::self(), SIGNAL(taskRemoved(::TaskManager::Task*)), this, SLOT(taskRemoved(::TaskManager::Task*)));
 }
 
 DockTaskManager::~DockTaskManager()
@@ -63,7 +63,7 @@ int DockTaskManager::findAppByWindowClass(QString name)
 	return -1;
 }
 
-int DockTaskManager::findAppByTask(TaskManager::TaskPtr task)
+int DockTaskManager::findAppByTask(::TaskManager::Task *task)
 {
 	for (int app_id = 0; app_id < m_apps.size(); app_id++)
 		if (m_apps[app_id]->tasks().contains(task))
@@ -71,12 +71,12 @@ int DockTaskManager::findAppByTask(TaskManager::TaskPtr task)
 	return -1;
 }
 
-void DockTaskManager::taskAdded(TaskManager::TaskPtr task)
+void DockTaskManager::taskAdded(::TaskManager::Task *task)
 {
 	updateTaskInfo(task, true);
 }
 
-void DockTaskManager::taskRemoved(TaskManager::TaskPtr task)
+void DockTaskManager::taskRemoved(::TaskManager::Task *task)
 {
 	int app_id = findAppByTask(task);
 	if (app_id != -1)
@@ -108,7 +108,7 @@ void DockTaskManager::removeLauncher(int app_id)
 	m_icons.removeAt(app_id);
 }
 
-void DockTaskManager::updateTaskInfo(TaskManager::TaskPtr task, bool allowCreate)
+void DockTaskManager::updateTaskInfo(::TaskManager::Task *task, bool allowCreate)
 {
 	int app_id = findAppByTask(task);
 	if (app_id == -1)

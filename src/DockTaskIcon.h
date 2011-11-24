@@ -42,7 +42,7 @@ protected:
 
 private:
 	DockApp::Ptr m_app;
-	QList<TaskManager::TaskPtr> tmp_taskList;
+	QList<TaskManager::Task *> tmp_taskList;
 	KMenu tmp_taskMenu;
 };
 

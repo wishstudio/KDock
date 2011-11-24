@@ -22,6 +22,8 @@
 #include <KIcon>
 #include <KLocale>
 
+#include <taskmanager/taskmanager.h>
+
 #include "DockConfig.h"
 #include "DockTaskIcon.h"
 
@@ -51,7 +53,7 @@ void DockTaskIcon::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 		{
 			tmp_taskMenu.clear();
 
-			for (QList<TaskManager::TaskPtr>::ConstIterator it = tmp_taskList.begin(); it != tmp_taskList.end(); it++)
+			for (QList<TaskManager::Task *>::ConstIterator it = tmp_taskList.begin(); it != tmp_taskList.end(); it++)
 			{
 				QAction *action = new QAction(KIcon(m_app->icon()), (*it)->visibleName(), this);
 				connect(action, SIGNAL(triggered(bool)), this, SLOT(taskMenuClicked()));
@@ -93,7 +95,7 @@ void DockTaskIcon::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void DockTaskIcon::taskMenuClicked()
 {
 	QList<QAction *> tmp_taskActions = tmp_taskMenu.actions();
-	TaskManager::TaskPtr task;
+	::TaskManager::Task *task = NULL;
 	for (int i = 0; i < tmp_taskActions.size(); i++)
 		if (tmp_taskActions[i] == sender())
 		{

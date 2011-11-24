@@ -22,12 +22,14 @@
 
 #include <QObject>
 
-#include "taskmanager/taskmanager.h"
-
 #include "DockApp.h"
 #include "DockTaskIcon.h"
 
-using TaskManager::TaskPtr;
+namespace TaskManager
+{
+class Task;
+}
+
 class DockTaskManager: public QObject
 {
 	Q_OBJECT
@@ -40,15 +42,15 @@ public:
 	static void setContainer(DockContainer *container);
 
 public slots:
-	void taskAdded(TaskPtr task);
-	void taskRemoved(TaskPtr task);
+	void taskAdded(::TaskManager::Task *task);
+	void taskRemoved(::TaskManager::Task *task);
 
 private:
 	int findAppByWindowClass(QString name);
-	int findAppByTask(TaskManager::TaskPtr task);
+	int findAppByTask(::TaskManager::Task *task);
 	void createLauncher(int app_id);
 	void removeLauncher(int app_id);
-	void updateTaskInfo(TaskManager::TaskPtr task, bool allowCreate);
+	void updateTaskInfo(::TaskManager::Task *task, bool allowCreate);
 
 	DockContainer *m_container;
 	QList<DockApp::Ptr> m_apps;

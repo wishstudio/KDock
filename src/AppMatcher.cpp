@@ -104,7 +104,7 @@ QString AppMatcher::getProcessBinaryName(pid_t pid)
  * 3. Window class specified in desktop file matches
  * 4. Try Name in /proc/pid/status or /proc/pid/cmdline to match Exec line in desktop file
  */
-QString AppMatcher::matchTask(TaskManager::TaskPtr task)
+QString AppMatcher::matchTask(TaskManager::Task *task)
 {
 	QString window_class = task->className().toLower();
 	if (!window_class.isEmpty())

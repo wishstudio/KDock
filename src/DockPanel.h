@@ -29,7 +29,6 @@
 #include "DockApp.h"
 #include "DockContainer.h"
 
-using TaskManager::TaskPtr;
 class QParallelAnimationGroup;
 class QPropertyAnimation;
 class QSvgRenderer;

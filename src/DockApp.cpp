@@ -29,8 +29,10 @@
 #include <KWindowInfo>
 #include <KWindowSystem>
 
+#include <taskmanager/taskmanager.h>
+
 DockApp::DockApp(QString desktop_file, bool isLauncher)
-	: m_tasks(QList<TaskManager::TaskPtr>())
+	: m_tasks(QList< ::TaskManager::Task *>())
 {
 	if (KDesktopFile::isDesktopFile(desktop_file))
 	{
@@ -56,7 +58,7 @@ DockApp::DockApp(QString desktop_file, bool isLauncher)
 
 DockApp::DockApp(QString executable, QString icon, QString name, QString wm_class)
 	: m_isLauncher(false), m_executable(executable), m_icon(icon), m_name(name), m_command(executable), m_wm_class(wm_class),
-		m_tasks(QList<TaskManager::TaskPtr>())
+		m_tasks(QList< ::TaskManager::Task *>())
 {
 }
 
@@ -160,7 +162,7 @@ QString DockApp::wm_class()
 	return m_wm_class;
 }
 
-QList<TaskManager::TaskPtr> DockApp::tasks()
+QList< ::TaskManager::Task *> DockApp::tasks()
 {
 	return m_tasks;
 }
@@ -175,23 +177,23 @@ int DockApp::countTasks()
 	return m_tasks.size();
 }
 
-void DockApp::addTask(TaskManager::TaskPtr task)
+void DockApp::addTask(::TaskManager::Task *task)
 {
 	m_tasks.append(task);
-	connect(task.data(), SIGNAL(activated()), this, SLOT(taskActivated()));
+	connect(task, SIGNAL(activated()), this, SLOT(taskActivated()));
 }
 
-void DockApp::removeTask(TaskManager::TaskPtr task)
+void DockApp::removeTask(::TaskManager::Task *task)
 {
 	m_tasks.removeOne(task);
-	disconnect(task.data(), SIGNAL(deactivated()), this, SLOT(taskDeactivated()));
+	disconnect(task, SIGNAL(deactivated()), this, SLOT(taskDeactivated()));
 }
 
 void DockApp::closeTasks()
 {
-	for (QList<TaskManager::TaskPtr>::Iterator it = m_tasks.begin(); it != m_tasks.end(); it++)
+	for (QList< ::TaskManager::Task *>::Iterator it = m_tasks.begin(); it != m_tasks.end(); it++)
 	{
-		TaskManager::TaskPtr task = *it;
+		::TaskManager::Task *task = *it;
 		task->close();
 	}
 }
