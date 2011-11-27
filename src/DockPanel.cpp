@@ -285,9 +285,9 @@ QPoint DockPanel::getPanelPosition() const
 
 void DockPanel::reposition()
 {
-	QPoint position = getPanelPosition();
 	qreal width = getDockLength(), height = getDockHeight();
 	resize(width + getReservedLength() * 2, height + getReservedHeight());
+	QPoint position = getPanelPosition();
 	setPos(position);
 	hoverAnimation();
 	m_view->setViewGeometry(QRect(position, size().toSize()));
