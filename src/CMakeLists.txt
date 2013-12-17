@@ -14,5 +14,6 @@ kde4_add_kcfg_files(KDock_SRCS DockConfig.kcfgc)
 kde4_add_ui_files(KDock_SRCS ui/AppearanceConfig.ui ui/BehaviorConfig.ui)
 kde4_add_executable(KDock ${KDock_SRCS})
 
-target_link_libraries(KDock ${KDE4_KDEUI_LIBS} ${KDE4_KUTILS_LIBS} ${X11_X11_LIB} taskmanager)
+target_link_libraries(KDock ${KDE4_KDEUI_LIBS} ${KDE4_KUTILS_LIBS}
+${KDE4_KIO_LIBS} ${KDE4_PLASMA_LIBS} ${X11_X11_LIB} taskmanager)
 install(TARGETS KDock ${INSTALL_TARGETS_DEFAULT_ARGS})
